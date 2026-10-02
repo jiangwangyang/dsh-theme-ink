@@ -8,13 +8,15 @@ the DSH defaults.
 The theme is enabled while the plugin is installed (no toggle) — disable or
 remove the plugin to restore the default theme.
 
+![hero](docs/screenshots/ink.png)
+
 ## Install
 
 Install into a web profile (requires the `webServer` service; do not install
 into a headless profile):
 
 ```sh
-dsh plugin --profile web add <path-to-this-package>
+dsh plugin --profile web add github:jiangwangyang/dsh-theme-ink
 ```
 
 Refresh the Web UI. The theme activates immediately; disable or remove the

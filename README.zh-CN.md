@@ -5,12 +5,14 @@ DeepSeek Harness Web UI 的水墨主题插件：不透明宣纸面板、浮于�
 
 主题加载即启用（无开关）——禁用或卸载插件即可还原默认主题。
 
+![hero](docs/screenshots/ink.png)
+
 ## 安装
 
 安装进 web profile（依赖 `webServer` 服务，请勿装进 headless profile）：
 
 ```sh
-dsh plugin --profile web add <本包路径>
+dsh plugin --profile web add github:jiangwangyang/dsh-theme-ink
 ```
 
 刷新 Web UI 即可生效；在插件管理中禁用/卸载即还原。
