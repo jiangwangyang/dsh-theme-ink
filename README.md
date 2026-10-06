@@ -12,8 +12,8 @@ remove the plugin to restore the default theme.
 
 ## Install
 
-Install into a web profile (requires the `webServer` service; do not install
-into a headless profile):
+Install into a web profile (purely browser-side; no host-side service
+dependencies):
 
 ```sh
 dsh plugin --profile web add github:jiangwangyang/dsh-theme-ink
@@ -24,26 +24,31 @@ plugin from plugin management to revert.
 
 ## How it works
 
-- **Host half** (`src/index.js`): serves `/ink/ink.css` and `/ink/ink.js`
-  through the `webServer` service (read from disk per request — edits apply on
-  refresh), and injects a boot marker, stylesheet and deferred renderer script
-  into `index.html` via `tapIndex` so the first paint never flashes the
-  default theme.
-- **Client half** (`src/client/index.js`): stacks the ink palette on the
-  current theme via `ctx.theme.overrideTokens` (orthogonal to the
-  light/dark/system preference; no theme id is registered and no preference is
-  touched), asserts a light color-scheme chrome after every `theme/change`,
-  and mounts the structural layer and the `window.DshInk` renderer. Everything
-  is reverted on unload.
-- **Structure layer** (`assets/ink.css`): gated by `html[data-dsh-ink]` —
-  shiki ink-highlight tokens and a top fx layer (`z-index: 9998`,
-  `pointer-events: none`) holding the vermilion seal, dry-brush strokes and
-  the particle canvas above all content. Panels are opaque paper colors via
-  the token overlay; there is no backdrop layer.
-- **Renderer** (`assets/ink.js`): creates the fx layer with seal and canvas;
-  a lightweight 2D-canvas particle loop (30fps cap) — blooming ink drops at
-  the canvas edges and swaying bamboo leaves, ported from the openagents ink
-  theme. Degrades to a static frame under `prefers-reduced-motion`.
+The theme is purely browser-side: the host half (`src/index.js`) is an empty
+implementation carrying only the enable/disable logs; all logic lives in a
+single build-free client bundle (`src/client/index.js`):
+
+- **Token override layer**: stacks the ink palette on the current theme via
+  `ctx.theme.overrideTokens` (orthogonal to the light/dark/system preference;
+  no theme id is registered and no preference is touched), and asserts a light
+  color-scheme chrome after every `theme/change`. Everything is reverted on
+  unload.
+- **Structure layer** (inlined stylesheet `STRUCTURE_CSS`, formerly
+  `assets/ink.css`): gated by `html[data-dsh-ink]` — shiki ink-highlight
+  tokens and a top fx layer (`z-index: 9998`, `pointer-events: none`) holding
+  the vermilion seal, dry-brush strokes and the particle canvas above all
+  content. Panels are opaque paper colors via the token overlay; there is no
+  backdrop layer.
+- **Renderer** (`createInkRenderer()`, inlined, formerly `assets/ink.js`):
+  creates the fx layer with seal and canvas; a lightweight 2D-canvas particle
+  loop (30fps cap) — blooming ink drops at the canvas edges and swaying bamboo
+  leaves, ported from the openagents ink theme. Degrades to a static frame
+  under `prefers-reduced-motion`.
+
+The stylesheet and renderer are inlined into the client bundle and arrive with
+the client plugin — no static asset routes, no index.html injection, no
+`window` global controller; the trade-off is a possible brief flash of the
+default theme before the bundle loads.
 
 ## License
 
